@@ -45,31 +45,6 @@
 				console.log("END offer -----------------------");				
 				
 				
-				
-				
-				// Ждем завершения сбора ICE-кандидатов перед отправкой (для упрощения)
-                status.innerText = "Поиск путей соединения (ICE) и Подключение к серверу А";
-
-				await new Promise((resolve) => {
-					if (pc.iceGatheringState === 'complete') resolve();
-					else {
-						pc.onicegatheringstatechange = () => {
-							if (pc.iceGatheringState === 'complete') resolve();
-						};
-					}
-				});
-
-
-
-
-				// Отправляем на сервер
-				status.innerText = "Отправка SDP на сервер А";
-				
-
-
-                const answer = await res.json();
-                await pc.setRemoteDescription(new RTCSessionDescription(answer));
-
 				console.log(answer);
 				console.log("END answer ------------------------------------");
 
