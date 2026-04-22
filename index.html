@@ -51,7 +51,7 @@
             createPeerConnection();
             const offer = await pc.createOffer();
             await pc.setLocalDescription(offer);
-            socket.emit('message', { sdp: pc.localDescription });
+            //socket.emit('message', { sdp: pc.localDescription });
         }
 
         // 4. Обработка входящих сообщений
