@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>P2P Video Call</title>
-    <script src="https://cloudflare.com"></script>
+
     <style>
         video { width: 45%; background: #000; border-radius: 8px; margin: 5px; }
         body { background: #222; color: white; text-align: center; font-family: sans-serif; }
@@ -16,7 +16,7 @@
     <button onclick="startCall()">Позвонить</button>
 
     <script>
-        const socket = io();
+
         let localStream;
         let pc;
 
