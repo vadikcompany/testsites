@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>P2P Video Call</title>
+    <script src="https://cloudflare.com"></script>
+    <style>
+        video { width: 45%; background: #000; border-radius: 8px; margin: 5px; }
+        body { background: #222; color: white; text-align: center; font-family: sans-serif; }
+    </style>
+</head>
+<body>
+    <h1>P2P Видеозвонок</h1>
+    
+    <video id="remoteVideo" autoplay playsinline></video>
+    <br>
+    <button onclick="startCall()">Позвонить</button>
+
+    <script>
+        const socket = io();
+        let localStream;
+        let pc;
+
+        const servers = { iceServers: [{ urls: 'stun:://google.com' }] };
+
+        // 1. Получаем доступ к камере
+        async function init() {
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            document.getElementById('localVideo').srcObject = localStream;
+        }
+
+        // 2. Создаем соединение
+        function createPeerConnection() {
+            pc = new RTCPeerConnection(servers);
+            
+            // Отправляем свои ICE-кандидаты (адреса) через сервер
+            pc.onicecandidate = e => {
+                if (e.candidate) socket.emit('message', { candidate: e.candidate });
+            };
+
+            // Когда пришел видеопоток от собеседника
+            pc.ontrack = e => {
+                document.getElementById('remoteVideo').srcObject = e.streams[0];
+            };
+
+            // Добавляем свои треки в соединение
+            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+        }
+
+        // 3. Логика звонка
+        async function startCall() {
+            createPeerConnection();
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            socket.emit('message', { sdp: pc.localDescription });
+        }
+
+        // 4. Обработка входящих сообщений
+        socket.on('message', async (data) => {
+            if (!pc) createPeerConnection();
+
+            if (data.sdp) {
+                await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+                if (data.sdp.type === 'offer') {
+                    const answer = await pc.createAnswer();
+                    await pc.setLocalDescription(answer);
+                    socket.emit('message', { sdp: pc.localDescription });
+                }
+            } else if (data.candidate) {
+                await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
