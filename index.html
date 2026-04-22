@@ -33,7 +33,7 @@
             
 			// Добавляем микрофон  и камеру в соединение          
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+                //const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
                 //document.getElementById('preview').srcObject = stream;
                 //stream.getTracks().forEach(track => pc.addTrack(track, stream));
 
@@ -42,11 +42,11 @@
                 //await pc.setLocalDescription(offer);
 
 				//console.log(offer);
-				//console.log("END offer -----------------------");				
+				console.log("END offer -----------------------");				
 				
 				
 				//console.log(answer);
-				//console.log("END answer ------------------------------------");
+				console.log("END answer ------------------------------------");
 
 				
 				//status.innerText = "В ЭФИРЕ";
